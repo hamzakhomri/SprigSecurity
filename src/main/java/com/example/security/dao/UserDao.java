@@ -14,14 +14,9 @@ import java.util.List;
 public class UserDao {
     private final static List<UserDetails> APPLICATION_USERS= Arrays.asList(
             new User(
-                    "hamza.khomri@gmail.com",
+                    "hamza.khomri01@gmail.com",
                     "hamza",
                     Collections.singleton(new SimpleGrantedAuthority("ROLE ADMIN"))
-            ),
-            new User(
-                    "user.adresse@gmail.com",
-                    "password",
-                    Collections.singleton(new SimpleGrantedAuthority("USER"))
             )
     );
     public UserDetails finduserbyemail(String email){
