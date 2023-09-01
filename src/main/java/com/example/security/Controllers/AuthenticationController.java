@@ -27,13 +27,16 @@ public class AuthenticationController {
     @PostMapping("/authenticate")
     public ResponseEntity<String> authenticate(@RequestBody AuthenticationRequest request) {
         try {
-            authenticationManager.authenticate(
-                    new UsernamePasswordAuthenticationToken(request.getEmail(), request.getPassword())
-            );
+            authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(request.getEmail(), request.getPassword()));
             final UserDetails user = userDao.finduserbyemail(request.getEmail());
+
             if (user != null) {
+                System.out.println("token was created");
                 return ResponseEntity.ok(jwtUtils.generateTokenForUser(user));
+            }else {
+                System.out.println("Creation Token Failed");
             }
+
         } catch (Exception e) {
             Logger logger = LoggerFactory.getLogger(AuthenticationController.class);
             logger.error("Something wrong !!", e);
