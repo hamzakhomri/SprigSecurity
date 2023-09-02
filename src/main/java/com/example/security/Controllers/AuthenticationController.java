@@ -4,30 +4,30 @@ import com.example.security.Config.JwtUtils;
 import com.example.security.dao.UserDao;
 import com.example.security.dto.AuthenticationRequest;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.userdetails.UserDetails;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/api/v1/auth")
+@CrossOrigin("http://localhost:8081")
+@Slf4j
 @RequiredArgsConstructor
 public class AuthenticationController {
-
     private final AuthenticationManager authenticationManager;
     private final UserDao userDao;
     private final JwtUtils jwtUtils;
 
     @PostMapping("/authenticate")
     public ResponseEntity<String> authenticate(@RequestBody AuthenticationRequest request) {
+        log.info("AYTHENTICATE RB AuthenticationRequest");
         try {
-            authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(request.getEmail(), request.getPassword()));
+             authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(request.getEmail(), request.getPassword()));
             final UserDetails user = userDao.finduserbyemail(request.getEmail());
 
             if (user != null) {
@@ -38,6 +38,7 @@ public class AuthenticationController {
             }
 
         } catch (Exception e) {
+            e.printStackTrace();
             Logger logger = LoggerFactory.getLogger(AuthenticationController.class);
             logger.error("Something wrong !!", e);
             return ResponseEntity.status(500).body(request.getEmail()+" or "+request.getPassword()+" Don't Exist");
