@@ -2,76 +2,75 @@ package com.example.security.Config;
 
 import com.example.security.dao.UserDao;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.AuthenticationProvider;
 import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
-import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
+import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
 import org.springframework.security.config.http.SessionCreationPolicy;
-import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
-import org.springframework.security.core.userdetails.UsernameNotFoundException;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.security.crypto.factory.PasswordEncoderFactories;
 import org.springframework.security.crypto.password.NoOpPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
-import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
 @EnableWebSecurity
+@Configuration
 @RequiredArgsConstructor
-public class SecurityConfig {
-    private  final  JwtAuthFilter jwtAuthFilter;
+@Slf4j
+public class SecurityConfig extends WebSecurityConfigurerAdapter {
+
+    private final JwtAuthFilter jwtAuthFilter;
     private final UserDao userDao;
 
-    @Bean
-    public SecurityFilterChain securityFilterChain(HttpSecurity htttp) throws Exception{
-        htttp
-                .csrf().disable()
+    @Override
+    protected void configure(HttpSecurity http) throws Exception {
+        http.csrf().disable()
                 .authorizeRequests()
-                .antMatchers("/**/auth/**")
-                .permitAll()
-                .anyRequest()
-                .authenticated()
+                .antMatchers("/**/auth/**").permitAll()
+                .anyRequest().authenticated()
+                .and()
+                .exceptionHandling()
+                .and()
+                .sessionManagement()
+                .sessionCreationPolicy(SessionCreationPolicy.IF_REQUIRED)
                 .and()
                 .sessionManagement()
                 .sessionCreationPolicy(SessionCreationPolicy.STATELESS)
+                .sessionFixation().none()
                 .and()
                 .authenticationProvider(authenticationProvider())
-                .addFilterBefore(jwtAuthFilter, UsernamePasswordAuthenticationFilter.class)
-                ;
-        return htttp.build();
+                .addFilterBefore(jwtAuthFilter, UsernamePasswordAuthenticationFilter.class);
     }
 
     @Bean
     public AuthenticationProvider authenticationProvider() {
-        final DaoAuthenticationProvider authenticationProvider = new DaoAuthenticationProvider();
+        DaoAuthenticationProvider authenticationProvider = new DaoAuthenticationProvider();
         authenticationProvider.setUserDetailsService(userDetailsService());
         authenticationProvider.setPasswordEncoder(passwordEncoder());
+        log.info(authenticationProvider.toString());
         return authenticationProvider;
     }
 
     @Bean
-    public AuthenticationManager authenticationManager(AuthenticationConfiguration config) throws Exception{
-        return config.getAuthenticationManager();
+    @Override
+    public AuthenticationManager authenticationManagerBean() throws Exception {
+        return super.authenticationManagerBean();
     }
 
     @Bean
     public PasswordEncoder passwordEncoder() {
-        //return new BCryptPasswordEncoder();
-
-        //IF YOU DONT ENCRYPT PASSWORD
         return NoOpPasswordEncoder.getInstance();
-
     }
 
     @Bean
-    public UserDetailsService userDetailsService(){
-        return new UserDetailsService() {
-            @Override
-            public UserDetails loadUserByUsername(String email) throws UsernameNotFoundException {
-                return userDao.finduserbyemail(email);
-            }
-        };
+    @Override
+    public UserDetailsService userDetailsService() {
+        return email -> userDao.findUserByEmail(email);
     }
 }
