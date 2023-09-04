@@ -21,42 +21,36 @@ public class JwtAuthFilter extends OncePerRequestFilter {
     private final UserDao userDao;
     private final JwtUtils jwtUtils;
 
-
     @Override
     protected void doFilterInternal(
             HttpServletRequest request,
             HttpServletResponse response,
             FilterChain filterChain) throws ServletException, IOException {
 
-        // Extract the "Authorization" header from the HTTP request
+        // Extract JWT token from the request
         final String authHeader = request.getHeader(AUTHORIZATION_HEADER);
-        final String userEmail;
-        final String jwtToken;
 
-        // Check if the "Authorization" header is missing or doesn't start with "Bearer"
+        // Check if the header is missing or doesn't start with "Bearer"
         if (authHeader == null || !authHeader.startsWith("Bearer")) {
-            // Continue processing the request by passing it to the next filter in the chain
-            System.out.println("authHeader is null // authHeader!=Bearer");
+            // Continue processing the request without authentication
             filterChain.doFilter(request, response);
             return;
         }
 
-        // Extract the JWT token by removing "Bearer " from the header value
-        jwtToken = authHeader.substring(7);
+        // Extract JWT token from the header
+        String jwtToken = authHeader.substring(7);
 
-        // Extract the user's email from the JWT token
-        userEmail = jwtUtils.extractUsername(jwtToken); // TODO to be implemented
+        // Extract user email from JWT token
+        String userEmail = jwtUtils.extractUsername(jwtToken);
 
-        // Check if the user's email is not null and there's no existing authentication
+        // Check if there is no existing authentication
         if (userEmail != null && SecurityContextHolder.getContext().getAuthentication() == null) {
-            // Fetch user details from the database based on the extracted email
-            System.out.println("userEmail is null // SecurityContextHolder is null");
-            UserDetails userDetails = userDao.finduserbyemail(userEmail);
+            // Fetch user details from the database
+            UserDetails userDetails = userDao.findUserByEmail(userEmail);
 
-            // Check if the JWT token is valid for the retrieved user details
+            // Check if the JWT token is valid for the user
             if (jwtUtils.isTokenValid(jwtToken, userDetails)) {
-                // Create an authentication token for the user
-                System.out.println("JWT token is valid for the retrieved user details");
+                // Create an authentication token
                 UsernamePasswordAuthenticationToken authToken =
                         new UsernamePasswordAuthenticationToken(userDetails, null, userDetails.getAuthorities());
                 authToken.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
@@ -66,8 +60,7 @@ public class JwtAuthFilter extends OncePerRequestFilter {
             }
         }
 
-        // Continue processing the request by passing it to the next filter in the chain
+        // Continue processing the request
         filterChain.doFilter(request, response);
     }
-
 }
