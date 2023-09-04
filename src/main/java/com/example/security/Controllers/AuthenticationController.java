@@ -19,30 +19,32 @@ import org.springframework.web.bind.annotation.*;
 @Slf4j
 @RequiredArgsConstructor
 public class AuthenticationController {
+
     private final AuthenticationManager authenticationManager;
     private final UserDao userDao;
     private final JwtUtils jwtUtils;
 
     @PostMapping("/authenticate")
     public ResponseEntity<String> authenticate(@RequestBody AuthenticationRequest request) {
-        log.info("AYTHENTICATE RB AuthenticationRequest");
+        log.info("Authentication Request");
+
         try {
-             authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(request.getEmail(), request.getPassword()));
-            final UserDetails user = userDao.finduserbyemail(request.getEmail());
+            authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(request.getEmail(), request.getPassword()));
+            UserDetails user = userDao.findUserByEmail(request.getEmail());
 
             if (user != null) {
-                System.out.println("token was created");
-                return ResponseEntity.ok(jwtUtils.generateTokenForUser(user));
-            }else {
-                System.out.println("Creation Token Failed");
+                String token = jwtUtils.generateTokenForUser(user);
+                log.info("Token was created");
+                return ResponseEntity.ok(token);
+            } else {
+                log.error("User not found");
             }
-
         } catch (Exception e) {
-            e.printStackTrace();
             Logger logger = LoggerFactory.getLogger(AuthenticationController.class);
-            logger.error("Something wrong !!", e);
-            return ResponseEntity.status(500).body(request.getEmail()+" or "+request.getPassword()+" Don't Exist");
+            logger.error("-_- / Authentication failed.", e);
+            return ResponseEntity.status(500).body("-_- /Authentication failed. Email or password does not exist.");
         }
-        return ResponseEntity.status(400).body("Some error had occurred.");
+
+        return ResponseEntity.status(400).body("-_- /Authentication failed. Some error occurred.");
     }
 }
