@@ -2,6 +2,7 @@ package com.example.security.Config;
 
 import com.example.security.dao.UserDao;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.AuthenticationProvider;
@@ -13,6 +14,7 @@ import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.NoOpPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
@@ -21,8 +23,10 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 @EnableWebSecurity
 @RequiredArgsConstructor
 public class SecurityConfig {
-    private  final  JwtAuthFilter jwtAuthFilter;
-    private final UserDao userDao;
+    @Autowired
+    JwtAuthFilter jwtAuthFilter;
+    @Autowired
+    UserDao userDao;
 
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity htttp) throws Exception{
@@ -58,7 +62,7 @@ public class SecurityConfig {
 
     @Bean
     public PasswordEncoder passwordEncoder() {
-        //return new BCryptPasswordEncoder();
+        // return new BCryptPasswordEncoder();
 
         //IF YOU DONT ENCRYPT PASSWORD
         return NoOpPasswordEncoder.getInstance();
