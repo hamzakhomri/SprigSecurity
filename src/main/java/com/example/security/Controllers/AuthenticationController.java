@@ -4,7 +4,6 @@ import com.example.security.Config.JwtUtils;
 import com.example.security.dao.UserDao;
 import com.example.security.dto.AuthenticationRequest;
 import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.ResponseEntity;
@@ -16,7 +15,6 @@ import org.springframework.web.bind.annotation.*;
 @RestController
 @RequestMapping("/api/v1/auth")
 @CrossOrigin("http://localhost:8081")
-@Slf4j
 @RequiredArgsConstructor
 public class AuthenticationController {
 
@@ -26,25 +24,22 @@ public class AuthenticationController {
 
     @PostMapping("/authenticate")
     public ResponseEntity<String> authenticate(@RequestBody AuthenticationRequest request) {
-        log.info("Authentication Request");
-
         try {
             authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(request.getEmail(), request.getPassword()));
-            UserDetails user = userDao.findUserByEmail(request.getEmail());
+            final UserDetails user = userDao.finduserbyemail(request.getEmail());
 
             if (user != null) {
-                String token = jwtUtils.generateTokenForUser(user);
-                log.info("Token was created");
-                return ResponseEntity.ok(token);
-            } else {
-                log.error("User not found");
+                System.out.println("token was created");
+                return ResponseEntity.ok(jwtUtils.generateTokenForUser(user));
+            }else {
+                System.out.println("Creation Token Failed");
             }
+
         } catch (Exception e) {
             Logger logger = LoggerFactory.getLogger(AuthenticationController.class);
-            logger.error("-_- / Authentication failed.", e);
-            return ResponseEntity.status(500).body("-_- /Authentication failed. Email or password does not exist.");
+            logger.error("Something wrong !!", e);
+            return ResponseEntity.status(500).body(request.getEmail()+" or "+request.getPassword()+" Don't Exist");
         }
-
-        return ResponseEntity.status(400).body("-_- /Authentication failed. Some error occurred.");
+        return ResponseEntity.status(400).body("Some error had occurred.");
     }
 }
