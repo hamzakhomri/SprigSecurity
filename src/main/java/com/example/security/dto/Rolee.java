@@ -3,10 +3,7 @@ package com.example.security.dto;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
+import javax.persistence.*;
 
 @Data
 @Entity
@@ -16,4 +13,9 @@ public class Rolee {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
     private String Role;
+    @ManyToOne
+    @JoinColumn(name = "userr_id")
+    private Userr userr;
+
+    // Constructors, getters, setters, etc.
 }
