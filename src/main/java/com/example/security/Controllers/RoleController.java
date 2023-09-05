@@ -1,6 +1,6 @@
 package com.example.security.Controllers;
 
-import com.example.security.Services.IRoleService;
+import com.example.security.Services.Role.IRoleService;
 import com.example.security.dto.Rolee;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
