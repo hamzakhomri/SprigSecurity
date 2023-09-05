@@ -1,7 +1,9 @@
-package com.example.security.Services;
+package com.example.security.Services.User;
 
 import com.example.security.Repository.UserRepository;
+import com.example.security.Services.User.IUserService;
 import com.example.security.dto.Userr;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -10,6 +12,7 @@ import java.net.UnknownHostException;
 import java.util.List;
 
 @Service
+@Slf4j
 public class UserService implements IUserService {
     @Autowired
     UserRepository userRepository;
@@ -17,11 +20,11 @@ public class UserService implements IUserService {
     @Override
     public Userr createUser(Userr userr) throws UnknownHostException, SocketException {
         try {
-            System.out.println("USer was created");
+            log.info("User was created");
             return userRepository.save(userr);
         }catch (Exception e){
+            log.error("error from create User : "+e);
             return null;
-
         }
     }
 
