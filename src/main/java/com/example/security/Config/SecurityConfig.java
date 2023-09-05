@@ -34,7 +34,7 @@ public class SecurityConfig {
                 .csrf().disable()
                 .authorizeRequests()
                 .antMatchers("/**/auth/**").permitAll()
-                .antMatchers("**/api/v1/user/**").permitAll()
+                .antMatchers("/**/api/v1/user/**").permitAll()
                 .anyRequest().authenticated()
                 .and()
                 .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS)
@@ -63,8 +63,6 @@ public class SecurityConfig {
     @Bean
     public PasswordEncoder passwordEncoder() {
         // return new BCryptPasswordEncoder();
-
-        //IF YOU DONT ENCRYPT PASSWORD
         return NoOpPasswordEncoder.getInstance();
 
     }

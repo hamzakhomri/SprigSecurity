@@ -7,6 +7,7 @@ import org.springframework.stereotype.Service;
 
 import java.net.SocketException;
 import java.net.UnknownHostException;
+import java.util.List;
 
 @Service
 public class UserService implements IUserService {
@@ -22,5 +23,11 @@ public class UserService implements IUserService {
             return null;
 
         }
+    }
+
+    @Override
+    public List<Userr> GetAllUsers() {
+        System.out.println("find All");
+        return userRepository.findAll();
     }
 }

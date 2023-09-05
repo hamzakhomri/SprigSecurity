@@ -7,6 +7,7 @@ import org.springframework.web.bind.annotation.*;
 
 import java.net.SocketException;
 import java.net.UnknownHostException;
+import java.util.List;
 
 @RestController
 @RequestMapping("api/v1/user")
@@ -17,5 +18,10 @@ public class USerController {
     @PostMapping()
     public Userr createuser (@RequestBody Userr userr) throws SocketException, UnknownHostException {
         return iUserService.createUser(userr);
+    }
+    @GetMapping()
+    public List<Userr> Getall (){
+        System.out.println("Get aLL");
+        return iUserService.GetAllUsers();
     }
 }
