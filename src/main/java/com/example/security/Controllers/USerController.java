@@ -1,6 +1,6 @@
 package com.example.security.Controllers;
 
-import com.example.security.Services.IUserService;
+import com.example.security.Services.User.IUserService;
 import com.example.security.dto.Userr;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
