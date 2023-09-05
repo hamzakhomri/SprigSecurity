@@ -14,5 +14,5 @@ public class GreetingController {
     public ResponseEntity<String> sayHello(){return ResponseEntity.ok("Hello from API"); }
 
     @GetMapping("/say-bye")
-    public ResponseEntity<String> saybY(){return ResponseEntity.ok("Hello from API"); }
+    public ResponseEntity<String> saybY(){return ResponseEntity.ok("By Api"); }
 }
