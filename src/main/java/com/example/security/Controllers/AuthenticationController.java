@@ -28,23 +28,18 @@ public class AuthenticationController {
     @PostMapping("/authenticate")
     public ResponseEntity<String> authenticate(@RequestBody AuthenticationRequest request) {
         try {
-            authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(request.getEmail(), request.getPassword()));
-            final UserDetails user = userDao.finduserbyemail(request.getEmail());
+                authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(request.getEmail(), request.getPassword()));
+                final UserDetails user = userDao.finduserbyemail(request.getEmail());
+                if (user != null) {
+                    System.out.println("token was created");
+                    return ResponseEntity.ok(jwtUtils.generateTokenForUser(user));
+                }
 
-            if (user != null) {
-                System.out.println("token was created");
-                return ResponseEntity.ok(jwtUtils.generateTokenForUser(user));
-            }else {
-                System.out.println("Creation Token Failed");
+            } catch (Exception e) {
+                Logger logger = LoggerFactory.getLogger(AuthenticationController.class);
+                logger.error("Something wrong !!", e);
+                return ResponseEntity.status(500).body("Email or Password don't Exist");
             }
-
-        } catch (Exception e) {
-            Logger logger = LoggerFactory.getLogger(AuthenticationController.class);
-            logger.error("Something wrong !!", e);
-            return ResponseEntity.status(500).body(request.getEmail()+" or "+request.getPassword()+" Don't Exist");
-        }
-
-
         return ResponseEntity.status(400).body("Some error had occurred.");
     }
 
