@@ -35,6 +35,7 @@ public class SecurityConfig {
                 .authorizeRequests()
                 .antMatchers("/**/auth/**").permitAll()
                 .antMatchers("/**/api/v1/user/**").permitAll()
+                .antMatchers("/**/api/v1/role/**").permitAll()
                 .anyRequest().authenticated()
                 .and()
                 .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS)
