@@ -29,24 +29,23 @@ public class SecurityConfig {
     UserDao userDao;
 
     @Bean
-    public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception{
+    public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http
                 .csrf().disable()
                 .authorizeRequests()
-                .antMatchers("/**/auth/**")
-                .permitAll()
-                .anyRequest()
-                .authenticated()
+                .antMatchers("/**/auth/**").permitAll()
+                .antMatchers("**/api/v1/user/**").permitAll()
+                .anyRequest().authenticated()
                 .and()
-                    .sessionManagement()
-                    .sessionCreationPolicy(SessionCreationPolicy.STATELESS)
+                .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS)
                 .and()
-                    .authenticationProvider(authenticationProvider())
-                    .addFilterBefore(jwtAuthFilter, UsernamePasswordAuthenticationFilter.class)
-                        .logout().logoutUrl("/say-bye")
+                .authenticationProvider(authenticationProvider()) // Define your AuthenticationProvider bean here
+                .addFilterBefore(jwtAuthFilter, UsernamePasswordAuthenticationFilter.class) // Define your JWT authentication filter bean here
+                .logout().logoutUrl("/say-bye") // Define your logout logic if needed
         ;
         return http.build();
     }
+
 
     @Bean
     public AuthenticationProvider authenticationProvider() {
