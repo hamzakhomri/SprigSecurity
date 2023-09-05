@@ -1,5 +1,7 @@
 package com.example.security.dao;
 
+import com.example.security.Repository.UserRepository;
+import com.example.security.dto.Userr;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
@@ -17,18 +19,15 @@ public class UserDao {
     @Autowired
     @Lazy
     PasswordEncoder encoder;
+    @Autowired
     private static List<UserDetails> APPLICATION_USERS;
+    @Autowired
+    private UserRepository userRepository;
     public UserDetails finduserbyemail(String email){
-        String password = false ? encoder.encode("password") : "password";
-
-        this.APPLICATION_USERS = List.of(
-                new User("user@gmail.com", password, List.of(new SimpleGrantedAuthority("ROLE ADMIN"),new SimpleGrantedAuthority("ROLE ENG")) )
-        );
-        return APPLICATION_USERS
-                .stream()
-                .filter(u -> u.getUsername().equals(email))
-                .findFirst()
-                .orElseThrow(()-> new UsernameNotFoundException("EMail No Found"));
+        Userr userr = userRepository.findByLogin(email);
+        if (userr == null)
+            throw new UsernameNotFoundException("EMail No Found");
+        return  new User(userr.getLogin(), userr.getPassword(), List.of(new SimpleGrantedAuthority("ROLE ADMIN"),new SimpleGrantedAuthority("ROLE ENG")) );
     }
 
     public UserDetails finduserbyPassword(String password){
