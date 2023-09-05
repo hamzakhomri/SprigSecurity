@@ -29,8 +29,8 @@ public class SecurityConfig {
     UserDao userDao;
 
     @Bean
-    public SecurityFilterChain securityFilterChain(HttpSecurity htttp) throws Exception{
-        htttp
+    public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception{
+        http
                 .csrf().disable()
                 .authorizeRequests()
                 .antMatchers("/**/auth/**")
@@ -38,13 +38,14 @@ public class SecurityConfig {
                 .anyRequest()
                 .authenticated()
                 .and()
-                .sessionManagement()
-                .sessionCreationPolicy(SessionCreationPolicy.STATELESS)
+                    .sessionManagement()
+                    .sessionCreationPolicy(SessionCreationPolicy.STATELESS)
                 .and()
-                .authenticationProvider(authenticationProvider())
-                .addFilterBefore(jwtAuthFilter, UsernamePasswordAuthenticationFilter.class)
+                    .authenticationProvider(authenticationProvider())
+                    .addFilterBefore(jwtAuthFilter, UsernamePasswordAuthenticationFilter.class)
+                        .logout().logoutUrl("/say-bye")
         ;
-        return htttp.build();
+        return http.build();
     }
 
     @Bean
