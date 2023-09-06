@@ -18,8 +18,12 @@ public class Userr {
     private String login;
     private String password;
 
-    @OneToMany(mappedBy = "userr", cascade = CascadeType.ALL, orphanRemoval = true)
+    @ManyToMany
+    @JoinTable(
+            name = "user_role",
+            joinColumns = @JoinColumn(name = "user_id"),
+            inverseJoinColumns = @JoinColumn(name = "role_id")
+    )
     private List<Rolee> roles = new ArrayList<>();
-
-    // Constructors, getters, setters, etc.
 }
+
