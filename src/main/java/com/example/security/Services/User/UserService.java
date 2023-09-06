@@ -1,7 +1,6 @@
 package com.example.security.Services.User;
 
 import com.example.security.Repository.UserRepository;
-import com.example.security.Services.User.IUserService;
 import com.example.security.dto.Userr;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
