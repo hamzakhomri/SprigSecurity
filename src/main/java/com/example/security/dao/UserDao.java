@@ -1,6 +1,8 @@
 package com.example.security.dao;
 
+import com.example.security.Repository.RoleRepository;
 import com.example.security.Repository.UserRepository;
+import com.example.security.dto.Rolee;
 import com.example.security.dto.Userr;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Lazy;
@@ -13,6 +15,7 @@ import org.springframework.stereotype.Repository;
 
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Repository
 public class UserDao {
@@ -23,19 +26,21 @@ public class UserDao {
     private static List<UserDetails> APPLICATION_USERS;
     @Autowired
     private UserRepository userRepository;
+    @Autowired
+    private RoleRepository roleRepository;
+
+
     public UserDetails finduserbyemail(String email){
         Userr userr = userRepository.findByLogin(email);
+
         if (userr == null)
-            throw new UsernameNotFoundException("EMail No Found");
-        return  new User(userr.getLogin(), userr.getPassword(), List.of(new SimpleGrantedAuthority("ROLE ADMIN"),new SimpleGrantedAuthority("ROLE ENG")) );
+            throw new UsernameNotFoundException("Email No Found");
+        List<Rolee> roles = userr.getRoles();
+        return  new User(
+                userr.getLogin(),
+                userr.getPassword(),
+                roles.stream().map(r -> new SimpleGrantedAuthority(r.getRole())).collect(Collectors.toList())
+        );
     }
 
-    public UserDetails finduserbyPassword(String password){
-        return APPLICATION_USERS
-                .stream()
-                .filter(u -> u.getUsername().equals(password))
-                .findFirst()
-                .orElseThrow(()-> new UsernameNotFoundException("No password FOUnd"))
-                ;
-    }
 }

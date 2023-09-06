@@ -14,6 +14,7 @@ import java.util.List;
 public class RoleController {
     @Autowired
     IRoleService iRoleService;
+
     @PostMapping()
     public Rolee createRole(@RequestBody Rolee rolee) throws SocketException, UnknownHostException{
         Rolee rolee1 =iRoleService.createRole(rolee);
@@ -25,6 +26,7 @@ public class RoleController {
             return rolee;
         }
     }
+
     @GetMapping()
     public List<Rolee> GetAll(){
         return iRoleService.getallroles();
