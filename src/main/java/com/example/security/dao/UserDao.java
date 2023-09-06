@@ -31,6 +31,7 @@ public class UserDao {
 
 
     public UserDetails finduserbyemail(String email){
+
         Userr userr = userRepository.findByLogin(email);
 
         if (userr == null)
